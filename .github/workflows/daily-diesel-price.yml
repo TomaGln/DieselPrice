@@ -11,12 +11,11 @@ jobs:
   check-price:
     runs-on: ubuntu-latest
     steps:
+      - name: Récupérer le code du dépôt
+        uses: actions/checkout@v4
+
       - name: Installer les dépendances
         run: pip install requests beautifulsoup4
-
-      - name: Récupérer le script
-        run: |
-          curl -o check_diesel_price.py https://raw.githubusercontent.com/TomaGln/DieselPrice/main/check_diesel_price.py
 
       - name: Lancer le script
         env:
