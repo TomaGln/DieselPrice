@@ -1,0 +1,25 @@
+name: Prix du diesel quotidien
+
+on:
+  schedule:
+    # Tous les jours à 8h00 heure de Belgique (7h00 UTC en été, 6h00 UTC en hiver)
+    # GitHub Actions ne gère que l'UTC — 7h UTC = ~9h en été / 8h en hiver
+    - cron: "0 7 * * *"
+  workflow_dispatch: {}  # permet de le lancer manuellement pour tester
+
+jobs:
+  check-price:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Installer les dépendances
+        run: pip install requests beautifulsoup4
+
+      - name: Récupérer le script
+        run: |
+          curl -o check_diesel_price.py https://raw.githubusercontent.com/TomaGln/DieselPrice/main/check_diesel_price.py
+
+      - name: Lancer le script
+        env:
+          STATION_URL: "https://carbu.com/belgique/index.php/station/tourneur/assesse/5330/1070"
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: python3 check_diesel_price.py
