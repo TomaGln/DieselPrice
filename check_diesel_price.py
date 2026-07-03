@@ -33,10 +33,13 @@ def get_diesel_price(url: str) -> tuple[str, str]:
     soup = BeautifulSoup(resp.text, "html.parser")
     text = soup.get_text(separator="\n")
 
-    # On cherche le bloc "Diesel (B7)" suivi du prix et de la date
+    # On cherche le bloc "Diesel (B7)" suivi *immédiatement* (juste des espaces/
+    # retours à la ligne entre les deux) du prix et de la date.
+    # Important : le nom du carburant apparaît aussi dans un menu déroulant de
+    # filtre en haut de page, donc on ne doit pas matcher n'importe quel texte
+    # entre le label et le prix, seulement du whitespace.
     pattern = re.compile(
-        re.escape(FUEL_LABEL) + r".*?([\d,]+)\s*€/L.*?(\d{2}/\d{2}/\d{2})",
-        re.DOTALL,
+        re.escape(FUEL_LABEL) + r"\s*([\d,]+)\s*€/L\s*(\d{2}/\d{2}/\d{2})"
     )
     match = pattern.search(text)
     if not match:
